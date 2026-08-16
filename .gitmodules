@@ -1,6 +1,10 @@
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/jvpgjava/CesucaCode-frontend.git
+	branch = main
+	ignore = all
 [submodule "backend"]
 	path = backend
 	url = https://github.com/jvpgjava/CesucaCode-backend.git
+	branch = main
+	ignore = all

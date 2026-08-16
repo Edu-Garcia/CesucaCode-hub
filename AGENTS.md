@@ -13,11 +13,11 @@ Este repositório é um **hub de agregação**. O código de produto vive nos su
 ## Regras para agentes
 
 1. **Não trate os submodules como pastas normais do hub.** Alterações de código em `frontend/` ou `backend/` devem ser commitadas **dentro** do respectivo submodule, no remote correto.
-2. **Commits do hub** só devem incluir: docs, skills, `AGENTS.md`, `README.md`, `.gitmodules`, ponteiros de submodule (SHA), e arquivos de configuração do hub.
+2. **Commits do hub** só devem incluir: docs, skills, `AGENTS.md`, `README.md`, `.gitmodules`, config do hub — e **ponteiros de submodule apenas quando o time pedir** para atualizar o pin default de `main`.
 3. **Nunca** copie o conteúdo dos modules para a árvore do hub como arquivos comuns — o hub apenas agrega.
-4. Ao trabalhar em feature full-stack, abra/use os dois working trees dos submodules e mantenha históricos separados.
-5. Prefira as skills em `.agents/skills/` para o fluxo idea → ship.
-
+4. Checkout de feature branch / commits locais nos submodules **não** devem ser commitados no hub. Os submodules usam `ignore = all` + `branch = main` no `.gitmodules`.
+5. Ao trabalhar em feature full-stack, trabalhe e faça push **dentro** de cada submodule; mantenha históricos separados.
+6. Prefira as skills em `.agents/skills/` para o fluxo idea → ship.
 ## Agent skills
 
 ### Issue tracker

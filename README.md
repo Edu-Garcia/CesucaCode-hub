@@ -20,28 +20,34 @@ Se já clonou sem submodules:
 git submodule update --init --recursive
 ```
 
-## Atualizar os modules
-
-Puxa o commit apontado pelo hub:
+Isso coloca cada submodule no **commit fixado pelo hub** (em geral um ponto de `main`). Em seguida, no dia a dia:
 
 ```bash
-git submodule update --remote --merge
+cd frontend && git checkout main && git pull
+cd ../backend && git checkout main && git pull
 ```
 
-Depois, se quiser fixar novas revisões no hub:
-
-```bash
-git add frontend backend
-git commit -m "chore: atualiza ponteiros dos submodules"
-```
+A partir daí você cria branches, commita e faz push **dentro** de `frontend/` ou `backend/` — isso **não** precisa (e não deve) gerar commit no hub.
 
 ## Desenvolvimento
 
-- Trabalho de **UI/app**: faça commits dentro de `frontend/` (remote do frontend).
-- Trabalho de **API/serviços**: faça commits dentro de `backend/` (remote do backend).
-- Trabalho de **docs/skills/hub**: faça commits na raiz deste repositório.
+- Trabalho de **UI/app**: branches/commits/PRs em `frontend/` → remote do frontend.
+- Trabalho de **API/serviços**: branches/commits/PRs em `backend/` → remote do backend.
+- Trabalho de **docs/skills/hub**: commits na raiz deste repositório.
 
-Não misture o conteúdo dos modules em commits do hub — o hub só registra o SHA apontado por cada submodule.
+Trocar de branch localmente no submodule é esperado. O hub está configurado com `ignore = all` nos submodules para o `git status` da raiz **não** ficar sujo por causa disso.
+
+## Quando atualizar o ponteiro no hub
+
+Só quando o time quiser mudar o **default** que um clone novo recebe (ex.: avançar o pin de `main`):
+
+```bash
+git submodule update --remote --merge
+git add frontend backend
+git commit -m "chore: atualiza ponteiros dos submodules para main"
+```
+
+Não rode isso só porque você entrou numa feature branch no submodule.
 
 ## Skills de agentes
 
