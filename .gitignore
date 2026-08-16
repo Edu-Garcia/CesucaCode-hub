@@ -1,0 +1,32 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Local scratch / agent scratchpads
+.scratch/
+
+# Dependencies / build (if ever added at hub level)
+node_modules/
+dist/
+build/
+.turbo/
+.next/
+coverage/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local tooling caches
+.cache/
+.tmp/

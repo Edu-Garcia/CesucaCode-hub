@@ -1,0 +1,15 @@
+# Domain docs
+
+**Layout:** single-context
+
+| Artefato | Caminho |
+|----------|---------|
+| Contexto / glossário | `CONTEXT.md` (raiz do hub) |
+| ADRs | `docs/adr/` |
+
+## Regras para consumidores (skills / agentes)
+
+1. Leia `CONTEXT.md` antes de nomear entidades de domínio ou propor mudanças de modelo.
+2. Ao decidir algo arquitetural relevante, registre um ADR em `docs/adr/`.
+3. Não invente termos que contradigam o glossário; se o glossário estiver incompleto, atualize-o (ex.: via `/grill-with-docs`).
+4. Código de produto continua nos submodules; o domínio compartilhado e decisões de integração frontend↔backend podem ficar documentados aqui.
