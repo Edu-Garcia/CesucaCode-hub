@@ -5,6 +5,8 @@
 | Artefato | Caminho |
 |----------|---------|
 | Contexto / glossário | `CONTEXT.md` (raiz do hub) |
+| Backend (arquitetura) | `docs/backend.md` |
+| Frontend (arquitetura) | `docs/frontend.md` |
 | ADRs | `docs/adr/` |
 
 ## Regras para consumidores (skills / agentes)

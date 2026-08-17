@@ -26,7 +26,8 @@ Issues do hub: markdown local em `.scratch/issues/` (ver `docs/agents/issue-trac
 
 ### Domain docs
 
-Layout single-context: `CONTEXT.md` na raiz do hub + ADRs em `docs/adr/`. Ver `docs/agents/domain.md`.
+Layout single-context: `CONTEXT.md` na raiz + fichas `docs/backend.md` /
+`docs/frontend.md` + ADRs em `docs/adr/`. Ver `docs/agents/domain.md`.
 
 ### Skills instaladas
 
