@@ -73,6 +73,8 @@ docker compose exec backend python manage.py createsuperuser
 
 E-mails de senha inicial em desenvolvimento saem no log do backend (`docker compose logs -f backend`). Chaves de LLM/embedding vão no `.env` da raiz do hub; o Compose injeta no container. Ollama no host usa `http://host.docker.internal:11434`.
 
+**Chat RAG:** exige `LLM_*`, `EMBEDDING_*` e chaves válidas no `.env`, além de materiais processados (`status=ready`) com embeddings no banco. Sem isso, upload ou respostas do chat podem falhar.
+
 A URL da API no frontend é `http://localhost:8000` de propósito: o navegador roda na sua máquina, não na rede interna do Compose.
 
 Para parar: `docker compose down`. Para zerar o banco: `docker compose down -v`.

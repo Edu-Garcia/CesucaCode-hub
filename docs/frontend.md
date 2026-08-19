@@ -1,7 +1,6 @@
 # Frontend — arquitetura e stack
 
-Documentação do submodule `frontend/`, alinhada à branch
-**`feat/login-contas-e-materiais`** (`36ea274`, inclui migração Biome).
+Documentação do submodule `frontend/`, alinhada à **`main`** (`550f3de`).
 
 README operacional: `frontend/README.md`.
 
@@ -9,9 +8,9 @@ README operacional: `frontend/README.md`.
 
 | Item | Estado |
 |------|--------|
-| Features | `auth`, `accounts`, `documents` |
+| Features | `auth`, `conversations`, `documents`, `accounts` |
 | Tooling | Biome (lint + format); sem ESLint/Prettier |
-| Chat UI | Não existe |
+| Chat UI | **Implementado** — streaming SSE, sidebar com histórico |
 | API base | `VITE_API_BASE_URL` (default `http://localhost:8000`) |
 
 ## Stack (`package.json`)
@@ -48,8 +47,10 @@ ProtectedRoute
   RequirePasswordCurrent
     /change-password
     AppShell
-      / → redirect /materiais
-      /materiais                → todos autenticados
+      / → redirect /chat
+      /chat                       → todos autenticados
+      /chat/:id                   → todos autenticados
+      /materiais                  → todos autenticados
       RequireRole(admin|coord)
         /materiais/:id
       RequireRole(admin)
@@ -88,14 +89,15 @@ CSS-first: `src/index.css` com `@import 'tailwindcss'` e tokens em `@theme`
 ```
 src/
   app/           router, providers, App
-  api/           client (fetch + refresh), endpoints/, types/
+  api/           client (fetch + refresh + SSE), endpoints/, types/
   features/
     auth/        login, change-password, AuthContext
+    conversations/  chat RAG, hooks useChat / useConversations
     accounts/    listagem/criação/import/reset (CSAdmin)
     documents/   lista, upload, detalhe, chunks
   shared/
     auth/        ProtectedRoute, RequireRole, RequirePasswordCurrent
-    layout/      AppShell, Sidebar, UserMenu
+    layout/      AppShell, Sidebar (nav + lista de conversas), UserMenu
     ui/          Button, Input, Dialog, …
     hooks/ lib/
 ```
@@ -109,20 +111,26 @@ src/
 4. Com `ROTATE_REFRESH_TOKENS` no backend, o client **precisa** gravar o novo
    refresh (já implementado)
 
+## Streaming SSE (`api/client.ts`)
+
+`streamEvents(path, body)` faz `POST` autenticado e parseia eventos SSE
+(`data`, `event: done`, `event: error`). Usado por
+`api/endpoints/conversations.ts` → `sendMessage()` (generator async que
+yielda pedaços de texto conforme chegam).
+
 ## Escopo por papel (UI × API)
 
-| Papel | `/materiais` | `/materiais/:id` | `/contas` |
-|-------|--------------|------------------|-----------|
-| CSAdmin | sim | sim | sim |
-| CSCoordinator | sim (cursos que coordena na API) | sim | não |
-| CSStudent | sim (próprio curso) | não (rota bloqueada) | não |
+| Papel | `/chat` | `/materiais` | `/materiais/:id` | `/contas` |
+|-------|---------|--------------|------------------|-----------|
+| CSAdmin | sim | sim | sim | sim |
+| CSCoordinator | sim | sim (cursos que coordena na API) | sim | não |
+| CSStudent | sim | sim (próprio curso) | não (rota bloqueada) | não |
 
-## Gaps nesta branch
+O contexto RAG no backend respeita o mesmo escopo de materiais do papel.
+
+## Gaps conhecidos
 
 - Sem testes automatizados (verificação manual contra backend).
-- Sem telas de chat/RAG.
-- Comentário residual `eslint-disable` possível em arquivos antigos — Biome
-  é a ferramenta oficial agora.
 
 ## Links oficiais (Context7 / docs)
 
@@ -132,3 +140,4 @@ src/
 - Zod: https://zod.dev/
 - Biome: https://biomejs.dev/
 - Tailwind v4: https://tailwindcss.com/docs
+- SSE (MDN): https://developer.mozilla.org/docs/Web/API/Server-sent_events

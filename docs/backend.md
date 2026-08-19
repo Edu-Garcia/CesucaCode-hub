@@ -1,7 +1,6 @@
 # Backend — arquitetura e stack
 
-Documentação do submodule `backend/`, alinhada à branch
-**`feat/provedores-ia-e-listagem-contas`** (`b529faa`).
+Documentação do submodule `backend/`, alinhada à **`main`** (`c4384b3`).
 
 README operacional completo: `backend/README.md`. Swagger ao vivo:
 `http://127.0.0.1:8000/api/docs/`.
@@ -10,10 +9,10 @@ README operacional completo: `backend/README.md`. Swagger ao vivo:
 
 | Item | Estado |
 |------|--------|
-| Apps | `core`, `accounts`, `documents`, `ai_providers` |
-| Chat / RAG | **Não implementado** (`conversations/` só citado no README antigo) |
+| Apps | `core`, `accounts`, `documents`, `conversations`, `ai_providers` |
+| Chat / RAG | **Implementado** — SSE + retrieval pgvector (`TOP_K_CHUNKS=5`) |
 | Listagem de contas | `GET /api/auth/accounts/` (CSAdmin) |
-| Embeddings | Gerados no upload/reprocess síncrono via `get_embedding_model()` |
+| Embeddings | Upload/reprocess síncrono + query RAG no chat |
 
 ## Stack (versões do `requirements/base.txt`)
 
@@ -86,6 +85,35 @@ Todo modelo de negócio herda `apps.core.models.TimeStampedModel`.
 | GET | `{id}/chunks/` | admin / coord |
 | POST | `{id}/reprocess/` | admin / coord |
 
+### `/api/conversations/`
+
+| Método | Rota | Quem |
+|--------|------|------|
+| GET | `/` | autenticado (só as próprias conversas) |
+| POST | `/` | autenticado |
+| GET/DELETE | `{id}/` | autenticado (dono) |
+| GET | `{id}/messages/` | autenticado (dono) |
+| POST | `{id}/messages/send/` | autenticado (dono) — **SSE** |
+
+O envio de mensagem retorna `Content-Type: text/event-stream` com eventos
+`data: {"content": "..."}`, terminando em `event: done` ou `event: error`.
+Mensagens user/assistant são persistidas automaticamente.
+
+## Chat com RAG (`apps/conversations`)
+
+Pipeline em `services.py`:
+
+1. Embedding da pergunta via `get_embedding_model()`
+2. Busca dos **5** chunks mais próximos (`CosineDistance`) entre materiais
+   `ready` que o usuário pode ver (mesmo escopo de `get_documents_queryset`)
+3. Montagem do prompt: **system prompt** + histórico + contexto + pergunta
+4. Resposta streamed via `get_chat_model().stream()`
+
+**System prompt:** `apps/conversations/prompts/system_prompt.md` (persona
+**S.O.F.I.**). Override opcional via `SYSTEM_PROMPT_PATH` no `.env` (relativo
+à raiz do backend ou absoluto). Editar o arquivo reflete na próxima mensagem
+sem reiniciar o servidor.
+
 ## Provedores de IA (`apps/ai_providers`)
 
 Factory (padrão LangChain: classes por provider, escolha por env):
@@ -98,20 +126,18 @@ Factory (padrão LangChain: classes por provider, escolha por env):
 \* DeepSeek e Abacus AI usam `ChatOpenAI` com `base_url` próprio (API
 compatível OpenAI).
 
-**Uso real hoje:** embeddings no pipeline de documentos. Chat só exercitado
-pelo comando `python manage.py test_ai_provider`.
+**Uso real hoje:** embeddings no pipeline de documentos **e** chat RAG
+(conversations). Comando auxiliar: `python manage.py test_ai_provider`.
 
 **Atenção (pgvector):** dimensão do `VectorField` é fixa na migration. Mudar
 `EMBEDDING_DIMENSIONS` / modelo exige nova migration + reprocess de todos os
 materiais. A extensão `vector` precisa existir no banco (`bootstrap_db` /
 `VectorExtension`) — sem isso: `type "vector" does not exist`.
 
-## Gaps conhecidos nesta branch
+## Gaps conhecidos
 
-- App `conversations` (chat RAG) ainda não existe.
 - Processamento de documentos é síncrono (sem Celery/RQ).
-- README do backend ainda lista `ai_providers` / `conversations` como
-  “em construção” na árvore — a factory de providers já está operacional.
+- Sem testes automatizados de API.
 
 ## Links oficiais (Context7 / docs)
 
@@ -119,3 +145,4 @@ materiais. A extensão `vector` precisa existir no banco (`bootstrap_db` /
 - Simple JWT settings: https://django-rest-framework-simplejwt.readthedocs.io/
 - pgvector Django: https://github.com/pgvector/pgvector-python
 - LangChain chat models: https://docs.langchain.com/
+- SSE (MDN): https://developer.mozilla.org/docs/Web/API/Server-sent_events
