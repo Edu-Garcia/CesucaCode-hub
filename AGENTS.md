@@ -18,6 +18,8 @@ Este repositório é um **hub de agregação**. O código de produto vive nos su
 4. Checkout de feature branch / commits locais nos submodules **não** devem ser commitados no hub. Os submodules usam `ignore = all` + `branch = main` no `.gitmodules`.
 5. Ao trabalhar em feature full-stack, trabalhe e faça push **dentro** de cada submodule; mantenha históricos separados.
 6. Prefira as skills em `.agents/skills/` para o fluxo idea → ship.
+7. **Não faça commit, push nem abra PR** — no hub nem nos submodules — **a menos que o usuário peça explicitamente** no prompt (ex.: "commita", "abre PR", "sobe pro GitHub"). Pedidos como "implemente", "atualize a documentação" ou "corrija" significam **só alterar arquivos localmente**; deixe o git para quando for solicitado.
+
 ## Agent skills
 
 ### Issue tracker
