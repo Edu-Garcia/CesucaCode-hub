@@ -47,6 +47,7 @@ services:
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
       ABACUSAI_API_KEY: ${ABACUSAI_API_KEY:-}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      SYSTEM_PROMPT_PATH: ${SYSTEM_PROMPT_PATH:-apps/conversations/prompts/system_prompt.md}
     volumes:
       - ./backend:/app
       - backend_media:/app/media
